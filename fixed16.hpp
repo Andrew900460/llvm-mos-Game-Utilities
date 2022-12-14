@@ -10,7 +10,7 @@
 
 // data layout (each letter is 1 bit)
 // (W = Whole part of the value [integer] ) (F = Fractional part of the value )
-//			WWWWWWWW-FFFFFFFF
+//  		WWWWWWWW-FFFFFFFF
 // 0.500 =	00000000-10000000
 // 3.625 =	00000011-10100000
 
