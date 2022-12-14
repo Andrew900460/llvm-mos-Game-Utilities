@@ -24,8 +24,8 @@ struct fixed16 {
 	};
 
 	fixed16() { value=0; }
-	fixed16(uint16 v) { value=v; }
-	fixed16(byte whole, byte frac): frac(frac), whole(whole) {}
+	fixed16(const uint16 v) { value=v; }
+	fixed16(const byte whole, const byte frac): frac(frac), whole(whole) {}
 
 	fixed16 operator = (const uint16 rhs) {
 		this->value = rhs;
