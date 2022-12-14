@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 // Right now this file contains common stuff that other source files may need,
 // but it will probably grow to contain a bunch of stuff.
 
