@@ -1,3 +1,5 @@
+#pragma once
+
 #include "fixed16.hpp"
 
 struct vec2fx16 {
@@ -37,6 +39,10 @@ struct vec2fx16 {
 	}
 	void operator /= (const fixed16& scalarRHS) {
 		(*this) = (*this)/scalarRHS;
+	}
+
+	bool operator == (const vec2fx16& rhs) {
+		return x==rhs.x && y==rhs.y;
 	}
 	
 

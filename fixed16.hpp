@@ -47,6 +47,40 @@ struct fixed16 {
 		r = (fixed16) (((uint32)value << 8) / (uint32)rhs.value);
 		return r;
 	}
+
+	void operator += (const fixed16& rhs) {
+		(*this) = (*this)+rhs;
+	}
+	void operator -= (const fixed16& rhs) {
+		(*this) = (*this)-rhs;
+	}
+	void operator *= (const fixed16& rhs) {
+		(*this) = (*this)*rhs;
+	}
+	void operator /= (const fixed16& rhs) {
+		(*this) = (*this)/rhs;
+	}
+
+	bool operator == (const fixed16& rhs) {
+		return value == rhs.value;
+	}
+
+	// Is there a even better implementation than this?
+	// 6502 clock time of ~[7599,12493] (results are ~40% faster with 'x.whole == x_old.whole')
+	fixed16 sqrt() {
+		fixed16 n = *this;
+		fixed16 x = 0x1000;
+		uint32 n_one = (uint32)n.value << 8;
+		while(true) {
+			fixed16 x_old = x;
+			x = (x.value + (uint16)(n_one / x.value)) >> 1;
+			if(x.whole == x_old.whole) break;
+			// if you replace the above expression with just 'x == x_old'
+			// it will go slower, but be a bit more accurate
+		}
+		return x;
+	}
+
 	static fixed16 inverse(const fixed16 a) { // basically does 1/a
 		return 0x10000 / (uint32)a.value;
 	}
