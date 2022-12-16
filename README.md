@@ -15,3 +15,9 @@ More to come.
 * Other useful functions for performing certain opertaions on bits.
 * Packed Binary Coded Decimal struct for storing numbers that are mostly going to be displayed on screen (Score/Points)
 * Random number generator
+
+# Some Ideas
+
+* function to convert an angle (1 byte representing [0,360]) to either a vec2byte, or vec2fixed
+* function that could then take an angle value, and pick a sprite for that specific angle (this could include sprite flipping)
+* function to help with making a hud using the sprite 0 thing
