@@ -17,6 +17,9 @@
 // send an array of palettes to the PPU Palette memory all at once,
 // Or collect all the info about controller input data into a single byte and returning that to you.
 
+// This file is still a work in progress
+// I may seperate this file into parts (PPU,APU,Controllers)
+
 #undef PPU // I am... Inevitable.
 
 #define PPU_MEM (*(volatile struct __ppu*)0x2000) // Just in case you want to do this.
