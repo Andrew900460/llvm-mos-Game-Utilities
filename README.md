@@ -1,3 +1,6 @@
+# Note To Any Current Cloners
+I think a lot of the files need to be put into their own folder (probably called "nes-game-utils" or somthing)
+
 # llvm-mos-Game-Utilities
 A library of pre-made types and functions to help with general programming or game development. Designed for the new 6502 compiler, "LLVM-MOS".
 
