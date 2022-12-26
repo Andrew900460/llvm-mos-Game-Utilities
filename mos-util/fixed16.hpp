@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdio.h>
 #include "mos-util.hpp"
 
 // 16 Bit Fixed Point Value
@@ -32,10 +33,10 @@ struct fixed16 {
 		return *this;
 	}
 	fixed16 operator + (const fixed16& rhs) { // 6502 clock time of ~[26,48]
-		return fixed16 { (uint16)(value+rhs.value) };
+		return fixed16(value+rhs.value);
 	}
 	fixed16 operator - (const fixed16& rhs) { // 6502 clock time of ~[26,30]
-		return fixed16{ (uint16)(value-rhs.value) };
+		return fixed16(value-rhs.value);
 	}
 	fixed16 operator * (const fixed16& rhs) { // 6502 clock time of ~[883,1357]
 		uint32 t1 = (uint32)value;
