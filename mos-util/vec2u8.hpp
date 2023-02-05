@@ -18,7 +18,7 @@ struct vec2u8 {
 	vec2u8 operator + (const vec2u8& rhs) {
 		return vec2u8(x+rhs.x,y+rhs.y);
 	}
-    vec2u8 operator - (const vec2u8& rhs) {
+	vec2u8 operator - (const vec2u8& rhs) {
 		return vec2u8(x-rhs.x, y-rhs.y);
 	}
 	vec2u8 operator * (const byte& scalarRHS) {
