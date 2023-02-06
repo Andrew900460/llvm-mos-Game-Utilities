@@ -37,3 +37,18 @@ byte reverse_bits(byte n) {
    return (reverse_lookup[n&0b1111] << 4) | reverse_lookup[n>>4];
 }
 
+template<class T> 
+void swap(T& a, T& b) {
+    T temp(a);
+    a=b;
+    b=temp;
+}
+
+template<typename T>
+void ReverseArrayInPlace(T arr[],const byte size) {
+    const byte reverses = size >> 1; // divide by 2
+    for(byte i=0; i<reverses; i++) {
+        swap(arr[i],arr[size-1-i]);
+    }
+}
+

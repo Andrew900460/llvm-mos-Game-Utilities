@@ -24,14 +24,18 @@ struct fixed16 {
 		};
 	};
 
-	fixed16() { value=0; }
-	fixed16(const uint16 v) { value=v; }
+	fixed16() = default; //{ value=0; }
+	fixed16(const fixed16& v) { value = v.value; }
+	fixed16(const uint16& v) { value=v; }
 	fixed16(const byte whole, const byte frac): frac(frac), whole(whole) {}
 
-	fixed16 operator = (const uint16 rhs) {
+	explicit fixed16(const char* str) { *this = fixed16::from_string(str); }
+
+	fixed16& operator = (const uint16 rhs) {
 		this->value = rhs;
 		return *this;
 	}
+	
 	fixed16 operator + (const fixed16& rhs) { // 6502 clock time of ~[26,48]
 		return fixed16(value+rhs.value);
 	}
@@ -49,17 +53,21 @@ struct fixed16 {
 		return r;
 	}
 
-	void operator += (const fixed16& rhs) {
+	fixed16& operator += (const fixed16& rhs) {
 		(*this) = (*this)+rhs;
+		return *this;
 	}
-	void operator -= (const fixed16& rhs) {
+	fixed16& operator -= (const fixed16& rhs) {
 		(*this) = (*this)-rhs;
+		return *this;
 	}
-	void operator *= (const fixed16& rhs) {
+	fixed16& operator *= (const fixed16& rhs) {
 		(*this) = (*this)*rhs;
+		return *this;
 	}
-	void operator /= (const fixed16& rhs) {
+	fixed16& operator /= (const fixed16& rhs) {
 		(*this) = (*this)/rhs;
+		return *this;
 	}
 
 	bool operator == (const fixed16& rhs) {
@@ -126,27 +134,33 @@ struct fixed16 {
 		
 		return result;
 	}
-	char* to_string() { // initial implementation, could obviously be better
-		char* output = new char[16];
 
-		char offset = sprintf(output, "%u", whole);
+	char* to_string(char* buffer,const byte size) { // initial implementation, could obviously be better
+		char offset = sprintf(buffer, "%u", whole);
 		
 		char i = offset;
-		output[i++] = '.';
+		buffer[i++] = '.';
 
-		if(frac==0){
-			output[i++] = '0';
+		if(frac==0) {
+			buffer[i++] = '0';
 		} else {
 			uint16 fracTemp = frac;
 			while (i < 16 && fracTemp != 0) {
 				fracTemp *= 10;
 				char digit = (fracTemp >> 8) + 48;
 				fracTemp &= 0x00FF;
-				output[i] = digit;
+				buffer[i] = digit;
 				i++;
 			}
 		}
-		output[i] = 0;
+		buffer[i] = 0;
+		return buffer;
+	}
+
+	char* to_string() {
+		char* output = new char[16];
+		to_string(output,16);
+		delete[] output;
 		return output;
 	}
 
