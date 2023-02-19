@@ -79,7 +79,7 @@ struct fixed16 {
 	}
 
 	bool operator < (const fixed16 rhs) const {
-		const fixed16 sub = rhs-(*this);
+		const fixed16 sub = (*this)-rhs;
 		return sub.value > 0 && ((sub.whole & 0b10000000) == 0);
 	}
 	bool operator > (const fixed16 rhs) const {
