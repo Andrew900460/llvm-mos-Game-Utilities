@@ -41,3 +41,4 @@ test/*
 *.prg
 *.bat
 *.code-workspace
+*.vscode

@@ -24,62 +24,80 @@ struct fixed16 {
 		};
 	};
 
-	fixed16() = default; //{ value=0; }
-	fixed16(const fixed16& v) { value = v.value; }
-	fixed16(const uint16& v) { value=v; }
-	fixed16(const byte whole, const byte frac): frac(frac), whole(whole) {}
+	constexpr fixed16() : value(0) {}
+	constexpr explicit fixed16(const uint16& v) : value(v) {}
+	constexpr explicit fixed16(const uint16&& v) : value(v) {}
+	explicit fixed16(const byte whole, const byte frac): frac(frac), whole(whole) {}
+	fixed16(const fixed16& v) : value(v.value) {}
 
-	explicit fixed16(const char* str) { *this = fixed16::from_string(str); }
+	explicit constexpr fixed16(const char str[]) : value(fixed16::from_string(str).value) {}
 
 	fixed16& operator = (const uint16 rhs) {
-		this->value = rhs;
+		value = rhs;
 		return *this;
-	}
+	};
 	
-	fixed16 operator + (const fixed16& rhs) { // 6502 clock time of ~[26,48]
+	fixed16 operator + (const fixed16 rhs) const { // 6502 clock time of ~[26,48]
 		return fixed16(value+rhs.value);
 	}
-	fixed16 operator - (const fixed16& rhs) { // 6502 clock time of ~[26,30]
+	fixed16 operator - (const fixed16 rhs) const { // 6502 clock time of ~[26,30]
 		return fixed16(value-rhs.value);
 	}
-	fixed16 operator * (const fixed16& rhs) { // 6502 clock time of ~[883,1357]
+	fixed16 operator * (const fixed16 rhs) const { // 6502 clock time of ~[883,1357]
 		uint32 t1 = (uint32)value;
 		uint32 t2 = (uint32)rhs.value;
-		return { (uint16) ((t1*t2) >> 8) };
+		return fixed16((uint16) ((t1*t2) >> 8));
 	}
-	fixed16 operator / (const fixed16& rhs) { // 6502 clock time of ~[1940,2393]
-		fixed16 r;
-		r = (fixed16) (((uint32)value << 8) / (uint32)rhs.value);
-		return r;
+	fixed16 operator / (const fixed16 rhs) const { // 6502 clock time of ~[1940,2393]
+		//fixed16 r;
+		//r = (fixed16);
+		return fixed16((uint16)(((uint32)value << 8) / (uint32)rhs.value));
 	}
 
-	fixed16& operator += (const fixed16& rhs) {
+	fixed16& operator += (const fixed16 rhs) {
 		(*this) = (*this)+rhs;
 		return *this;
 	}
-	fixed16& operator -= (const fixed16& rhs) {
+	fixed16& operator -= (const fixed16 rhs) {
 		(*this) = (*this)-rhs;
 		return *this;
 	}
-	fixed16& operator *= (const fixed16& rhs) {
+	fixed16& operator *= (const fixed16 rhs) {
 		(*this) = (*this)*rhs;
 		return *this;
 	}
-	fixed16& operator /= (const fixed16& rhs) {
+	fixed16& operator /= (const fixed16 rhs) {
 		(*this) = (*this)/rhs;
 		return *this;
 	}
 
-	bool operator == (const fixed16& rhs) {
+	bool operator == (const fixed16 rhs) const {
 		return value == rhs.value;
+	}
+	bool operator != (const fixed16 rhs) const {
+		return !(*this == rhs);
+	}
+
+	bool operator < (const fixed16 rhs) const {
+		const fixed16 sub = rhs-(*this);
+		return sub.value > 0 && ((sub.whole & 0b10000000) == 0);
+	}
+	bool operator > (const fixed16 rhs) const {
+		return rhs < *this;
+	}
+	bool operator <= (const fixed16 rhs) const {
+		return !(*this > rhs);
+	}
+	bool operator >= (const fixed16 rhs) const {
+		return !(*this < rhs);
 	}
 
 	// Is there a even better implementation than this?
 	// 6502 clock time of ~[7599,12493] (results are ~40% faster with 'x.whole == x_old.whole')
-	fixed16 sqrt() {
-		fixed16 n = *this;
-		fixed16 x = 0x1000;
-		uint32 n_one = (uint32)n.value << 8;
+	fixed16 sqrt() const {
+		//fixed16 n = value;
+		fixed16 x(0x1000);
+		uint32 n_one = (uint32)this->value << 8;
 		while(true) {
 			fixed16 x_old = x;
 			x = (x.value + (uint16)(n_one / x.value)) >> 1;
@@ -90,15 +108,15 @@ struct fixed16 {
 		return x;
 	}
 
-	static fixed16 inverse(const fixed16 a) { // basically does 1/a
-		return 0x10000 / (uint32)a.value;
+	fixed16 inverse() const { // basically does 1/a
+		return fixed16(0x10000 / (uint32)this->value);
 	}
 
-	static fixed16 from_string(const char str[]) { // initial implementation, could obviously be better
+	static constexpr fixed16 from_string(const char str[]) { // initial implementation, could obviously be better
 		fixed16 result;
 
 		byte p = 0;
-		byte wholeDigits;
+		byte wholeDigits = 0;
 		while(str[p]!=0) { // find decimal point
 			if(str[p]=='.') break;
 			p++;
@@ -119,7 +137,7 @@ struct fixed16 {
 		}
 
 		// generate fractional part
-		const fixed16 one_over_ten = 0x0019;
+		const fixed16 one_over_ten(0x0019);
 		fixed16 mult = one_over_ten;
 		p=wholeDigits+1;
 		while(str[p]!=0) {
@@ -135,7 +153,7 @@ struct fixed16 {
 		return result;
 	}
 
-	char* to_string(char* buffer,const byte size) { // initial implementation, could obviously be better
+	char* to_string(char buffer[], const byte size) { // initial implementation, could obviously be better
 		char offset = sprintf(buffer, "%u", whole);
 		
 		char i = offset;
@@ -157,10 +175,12 @@ struct fixed16 {
 		return buffer;
 	}
 
-	char* to_string() {
+	// This function may change to not use heap allocation
+	// And opt to use another form of string allocation that is faster
+	char* to_string() { 
 		char* output = new char[16];
 		to_string(output,16);
-		delete[] output;
+		//delete[] output;
 		return output;
 	}
 

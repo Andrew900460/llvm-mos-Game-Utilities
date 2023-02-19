@@ -30,8 +30,7 @@
 // I may seperate this file into parts (PPU,APU,Controllers)
 
 #undef PPU // I am... Inevitable.
-
-#define PPU_MEM (*(volatile struct __ppu*)0x2000) // Just in case you want to do this.
+#define PPU_MEM (*reinterpret_cast<volatile struct __ppu*>(0x2000)) // Just in case you want to do this.
 
 namespace NesUtil {
 
@@ -57,7 +56,7 @@ namespace NesUtil {
 	struct NesColor {
 		unsigned char color;
 		NesColor(): color(0) {}
-		NesColor(const unsigned char color): color(color) {}
+		explicit NesColor(const unsigned char color): color(color) {}
 		NesColor(const char hue4b, const char val2b): color(hue4b | val2b<<4) {} // works best if the input's are const/literals
 		
 		operator unsigned char() const { return color; }
@@ -78,7 +77,7 @@ namespace NesUtil {
 			const NesColor c3
 		): color0(c0),color1(c1),color2(c2),color3(c3) {}
 
-		Palette(
+		explicit Palette(
 			const unsigned char palColors[4]
 		): color0(palColors[0]),color1(palColors[1]),color2(palColors[2]),color3(palColors[3]) {}
 	};
@@ -149,7 +148,7 @@ namespace NesUtil {
 		void SendAllPalettes(const Palette palettes[]) volatile {
 			SetVramWriteAddress(PPU_PALETTE_START);
 			for (char i=0;i<32;i++) {
-				WriteToVram(((unsigned char*)palettes)[i]);
+				WriteToVram(reinterpret_cast<unsigned char*>(palettes)[i]);
 			}
 		}
 
@@ -160,7 +159,7 @@ namespace NesUtil {
 		}
 
 		volatile __ppu& operator ()() { // kinda redundant, but I'll leave it here for now
-			return (*(volatile struct __ppu*)0x2000);
+			return (*reinterpret_cast<volatile struct __ppu*>(0x2000));
 		}
 	};
 
