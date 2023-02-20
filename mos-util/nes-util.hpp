@@ -6,6 +6,8 @@
 #include <neslib.h>
 #include <peekpoke.h>
 
+#include "mos-util.hpp"
+
 ///** ATTENTION! This file is largely a work in progress. **///
 ///** 		 Many Things are bound to change here		  **///
 
@@ -54,12 +56,12 @@ namespace NesUtil {
 	volatile PPU& PPU = (*(volatile struct PPU*)0x2000);
 
 	struct NesColor {
-		unsigned char color;
+		byte color;
 		NesColor(): color(0) {}
-		explicit NesColor(const unsigned char color): color(color) {}
-		NesColor(const char hue4b, const char val2b): color(hue4b | val2b<<4) {} // works best if the input's are const/literals
+		explicit NesColor(const byte color): color(color) {}
+		explicit NesColor(const char hue4b, const char val2b): color(hue4b | val2b<<4) {} // works best if the input's are const/literals
 		
-		operator unsigned char() const { return color; }
+		operator byte() const { return color; }
 	};
 
 	struct Palette {
@@ -78,15 +80,15 @@ namespace NesUtil {
 		): color0(c0),color1(c1),color2(c2),color3(c3) {}
 
 		explicit Palette(
-			const unsigned char palColors[4]
+			const byte palColors[4]
 		): color0(palColors[0]),color1(palColors[1]),color2(palColors[2]),color3(palColors[3]) {}
 	};
 
 	struct Sprite {
-		char x;
-		char y;
-		char tileID;
-		char attributes;
+		byte x;
+		byte y;
+		byte tileID;
+		byte attributes;
 
 		// Allows you to setup the info for sprites in a more human readable way. (works best with literals)
 		void SetAttributes( // this may become a seperate function outside the struct
@@ -117,7 +119,7 @@ namespace NesUtil {
 		}
 
 		// Send 1 byte of data to the vram
-		void WriteToVram(const unsigned char data) volatile {
+		void WriteToVram(const byte data) volatile {
 			PPU_MEM.vram.data = data;
 		}
 
@@ -148,7 +150,7 @@ namespace NesUtil {
 		void SendAllPalettes(const Palette palettes[]) volatile {
 			SetVramWriteAddress(PPU_PALETTE_START);
 			for (char i=0;i<32;i++) {
-				WriteToVram(reinterpret_cast<unsigned char*>(palettes)[i]);
+				WriteToVram(reinterpret_cast<byte*>(palettes)[i]);
 			}
 		}
 
@@ -167,7 +169,7 @@ namespace NesUtil {
 		ppu_wait_nmi();
 	}
 
-	void WaitNMI(unsigned char nmiCount) {
+	void WaitNMI(byte nmiCount) {
 		for (;nmiCount > 0; nmiCount--) {
 			ppu_wait_nmi();
 		}
@@ -177,7 +179,7 @@ namespace NesUtil {
 		while (!(PPU_MEM.status & 0x80));
 	}
 
-	void WaitVBlanks(unsigned char vblanks) {
+	void WaitVBlanks(byte vblanks) {
 		for (;vblanks > 0; vblanks--) {
 			WaitVBlank();
 		}
@@ -186,14 +188,14 @@ namespace NesUtil {
 	// floats aren't currently supported, but the compiler can still work with them :D
 	// So we can use a const float and convert it to a byte at compile time. Now our code is more clear.
 	void WaitVBlankSeconds(const float seconds) {
-		unsigned char vblanks = (unsigned char)(seconds*60.0f);
+		byte vblanks = (byte)(seconds*60.0f);
 		WaitVBlanks(vblanks);
 	}
 
 	// Clear "Object Attribute Memory", a place in the Ram where Sprite info is stored
 	// Ideally, 'oamRamAddr' should be a value where the lower byte is zero, for performance reasons. (0x0200) 
 	void ClearOAM(const unsigned short oamRamAddr) {
-		unsigned char i=0;
+		byte i=0;
 		while(true) {
 			POKE(oamRamAddr+i,0xff);
 			i+=4;
