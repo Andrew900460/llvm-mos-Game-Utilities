@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdio.h>
 #include "mos-util.hpp"
+#include "string_pool.hpp"
 
 // 16 Bit Fixed Point Value
 // You will need this if you want to simulate physics or do animations-
@@ -153,35 +153,35 @@ struct fixed16 {
 		return result;
 	}
 
-	char* to_string(char buffer[], const byte size) { // initial implementation, could obviously be better
-		char offset = sprintf(buffer, "%u", whole);
-		
-		char i = offset;
-		buffer[i++] = '.';
-
-		if(frac==0) {
-			buffer[i++] = '0';
-		} else {
-			uint16 fracTemp = frac;
-			while (i < 16 && fracTemp != 0) {
-				fracTemp *= 10;
-				char digit = (fracTemp >> 8) + 48;
-				fracTemp &= 0x00FF;
-				buffer[i] = digit;
-				i++;
-			}
-		}
-		buffer[i] = 0;
-		return buffer;
-	}
-
-	// This function may change to not use heap allocation
-	// And opt to use another form of string allocation that is faster
-	char* to_string() { 
-		char* output = new char[16];
-		to_string(output,16);
-		//delete[] output;
-		return output;
-	}
+	char* to_string(char buffer[], const byte size);
+	char* to_string();
 
 };
+
+char* fixed16::to_string(char buffer[], const byte size) {  // initial implementation, could obviously be better
+	char offset = sprintf(buffer, "%u", whole);
+
+	char i = offset;
+	buffer[i++] = '.';
+
+	if(frac==0) {
+		buffer[i++] = '0';
+	} else {
+		uint16 fracTemp = frac;
+		while (i < 16 && fracTemp != 0) {
+			fracTemp *= 10;
+			char digit = (fracTemp >> 8) + 48;
+			fracTemp &= 0x00FF;
+			buffer[i] = digit;
+			i++;
+		}
+	}
+	buffer[i] = 0;
+	return buffer;
+}
+
+char* fixed16::to_string() {
+	char* output = RequestStringFromPool();
+	to_string(output,32);
+	return output;
+}

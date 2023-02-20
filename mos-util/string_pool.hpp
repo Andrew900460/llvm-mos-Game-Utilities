@@ -1,6 +1,6 @@
 #pragma once
 
-#include "nes-util.hpp"
+#include "mos-util.hpp"
 
 // Plan:
 // Implement a system for temporarily allocating strings that functions
@@ -30,8 +30,8 @@
 byte _availableString = 0;
 char _stringPool[256];
 
-char* RequestString() {
+char* RequestStringFromPool() {
     const char* s = _stringPool+_availableString;
     _availableString += 32;
-    return s;
+    return (char*)s;
 }
