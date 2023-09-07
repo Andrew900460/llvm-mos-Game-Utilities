@@ -1,5 +1,5 @@
 # Note To Any Current Cloners
-I reccomend grabbing what you want from this repo, rather than trying to use it all and directly depend on this repo. But I would appreciate if you starred and cloned the repo to get updates.
+I reccomend grabbing what you want from this repo, rather than trying to use it all and directly depend on this repo. But I would appreciate it if you starred and cloned the repo to get updates.
 HPP files may move around a lot, names may change. In general, there will probably be breaking changes. But do come back here when I update the repo to see what all i added.
 
 I think a lot of the files need to be put into their own folder (probably called "nes-game-utils" or somthing)
