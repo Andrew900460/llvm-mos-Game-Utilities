@@ -1,4 +1,7 @@
 # Note To Any Current Cloners
+I reccomend grabbing what you want from this repo, rather than trying to use it all and directly depend on this repo.
+HPP files may move around a lot, names may change. In general, there will probably be breaking changes. But do come back here when I update the repo to see what all i added.
+
 I think a lot of the files need to be put into their own folder (probably called "nes-game-utils" or somthing)
 So this may cause issues with anyone who are currently using the files. But I will soon settle on a specific folder structure that hopefully won't conflict with other folders.
 
@@ -7,10 +10,17 @@ Also, I want to make it clear to anyone reading that I don't have a "fully irone
 # llvm-mos-Game-Utilities
 A library of pre-made types and functions to help with general programming or game development. Designed for the new 6502 compiler, "LLVM-MOS".
 
-Right now, there is a basic implementation for:
+Right now, this repo contains some useful things like:
 + fixed16 struct
 + vec2fx16 struct
-
++ vec2u8 struct
++ vec2u16 struct
++ Special Nes abstractions for different parts of the Nes hardware
+  * Currently, this is mostly the PPU and Joypad.
++ A debugging tool that can be used with fceux for logging to an external console, performance profiling, etc.
++ A "string pool" system I came up with that can be used for when you need to generate a string from other objects.
++ Various other general utility functions that could be applicable to whatever project you are working on.
++ Other general purpose types that can be used
 More to come.
 
 
