@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mos-util.hpp"
+#include "types.hpp"
 
 struct vec2u8 {
 
@@ -9,13 +9,13 @@ struct vec2u8 {
 
 	constexpr vec2u8() : x(0),y(0) {}
 	explicit vec2u8(const byte x,const byte y): x(x),y(y) {}
-	explicit vec2u8(const vec2u8& v): x(v.x),y(v.y) {}
+	//explicit vec2u8(const vec2u8& v): x(v.x),y(v.y) {}
 
-	vec2u8& operator = (const vec2u8& rhs) {
-		x = rhs.x;
-		y = rhs.y;
-		return *this;
-	}
+	// vec2u8& operator = (const vec2u8& rhs) {
+	// 	x = rhs.x;
+	// 	y = rhs.y;
+	// 	return *this;
+	// }
 
 	vec2u8 operator + (const vec2u8& rhs) const {
 		return vec2u8(x+rhs.x,y+rhs.y);
@@ -51,7 +51,6 @@ struct vec2u8 {
 		return x==rhs.x && y==rhs.y;
 	}
 
-
-	
-
 };
+
+vec2u8 PositionToCenter(const vec2u8 point, const byte width, const byte height);

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "mos-util.hpp"
-#include "string_pool.hpp"
+#include <cstddef>
+//#include "string_pool.hpp"
 
 // 16 Bit Fixed Point Value
 // You will need this if you want to simulate physics or do animations-
@@ -17,7 +18,7 @@
 
 struct fixed16 {
 	union {
-		uint16 value;
+		int16 value;
 		struct {
 			byte frac;
 			byte whole;
@@ -25,17 +26,17 @@ struct fixed16 {
 	};
 
 	constexpr fixed16() : value(0) {}
-	constexpr explicit fixed16(const uint16& v) : value(v) {}
-	constexpr explicit fixed16(const uint16&& v) : value(v) {}
-	explicit fixed16(const byte whole, const byte frac): frac(frac), whole(whole) {}
-	fixed16(const fixed16& v) : value(v.value) {}
+	constexpr fixed16(const int16& v) : value(v) {}
+	// constexpr fixed16(const uint16&& v) : value(v) {}
+	// explicit fixed16(const byte whole, const byte frac): frac(frac), whole(whole) {}
+	// fixed16(const fixed16& v) : value(v.value) {}
 
-	explicit constexpr fixed16(const char str[]) : value(fixed16::from_string(str).value) {}
+	// explicit constexpr fixed16(const char str[]) : value(fixed16::from_string(str).value) {}
 
-	fixed16& operator = (const uint16 rhs) {
-		value = rhs;
-		return *this;
-	};
+	// fixed16& operator = (const uint16 rhs) {
+	// 	value = rhs;
+	// 	return *this;
+	// };
 	
 	fixed16 operator + (const fixed16 rhs) const { // 6502 clock time of ~[26,48]
 		return fixed16(value+rhs.value);
@@ -44,14 +45,14 @@ struct fixed16 {
 		return fixed16(value-rhs.value);
 	}
 	fixed16 operator * (const fixed16 rhs) const { // 6502 clock time of ~[883,1357]
-		uint32 t1 = (uint32)value;
-		uint32 t2 = (uint32)rhs.value;
-		return fixed16((uint16) ((t1*t2) >> 8));
+		int32 t1 = (int32)value;
+		int32 t2 = (int32)rhs.value;
+		return fixed16((int16) ((t1*t2) >> 8));
 	}
 	fixed16 operator / (const fixed16 rhs) const { // 6502 clock time of ~[1940,2393]
 		//fixed16 r;
 		//r = (fixed16);
-		return fixed16((uint16)(((uint32)value << 8) / (uint32)rhs.value));
+		return fixed16((int16)(((int32)value << 8) / (int32)rhs.value));
 	}
 
 	fixed16& operator += (const fixed16 rhs) {
@@ -97,10 +98,10 @@ struct fixed16 {
 	fixed16 sqrt() const {
 		//fixed16 n = value;
 		fixed16 x(0x1000);
-		uint32 n_one = (uint32)this->value << 8;
+		int32 n_one = (int32)this->value << 8;
 		while(true) {
 			fixed16 x_old = x;
-			x = (x.value + (uint16)(n_one / x.value)) >> 1;
+			x = (x.value + (int16)(n_one / x.value)) >> 1;
 			if(x.whole == x_old.whole) break;
 			// if you replace the above expression with just 'x == x_old'
 			// it will go slower, but be a bit more accurate
@@ -109,10 +110,10 @@ struct fixed16 {
 	}
 
 	fixed16 inverse() const { // basically does 1/a
-		return fixed16(0x10000 / (uint32)this->value);
+		return fixed16((int16)(0x10000 / (int32)this->value));
 	}
 
-	static constexpr fixed16 from_string(const char str[]) { // initial implementation, could obviously be better
+/* 	static constexpr fixed16 from_string(const char str[]) { // initial implementation, could obviously be better
 		fixed16 result;
 
 		byte p = 0;
@@ -152,17 +153,19 @@ struct fixed16 {
 		
 		return result;
 	}
+	*/
 
-	char* to_string(char buffer[], const byte size);
 	char* to_string();
+	//char* to_string();
+	
 
 };
-
+/*
 char* fixed16::to_string(char buffer[], const byte size) {  // initial implementation, could obviously be better
 	char offset = sprintf(buffer, "%u", whole);
 
 	char i = offset;
-	buffer[i++] = '.';
+	buffer[(int)i++] = '.';
 
 	if(frac==0) {
 		buffer[i++] = '0';
@@ -185,3 +188,4 @@ char* fixed16::to_string() {
 	to_string(output,32);
 	return output;
 }
+ */

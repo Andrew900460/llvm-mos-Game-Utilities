@@ -1,4 +1,6 @@
-#pragma once
+#include "string_pool.hpp"
+
+#include "mos-util.hpp"
 
 // Plan:
 // Implement a system for temporarily allocating strings that functions
@@ -25,7 +27,11 @@
 // |||||||| |||||||| |||||||| |||||||| string 6
 // |||||||| |||||||| |||||||| |||||||| string 7
 
-#define STRING_POOL_EACH_SIZE 32
+byte _availableString = 0;
+char _stringPool[256];
 
-// Get a pointer to a string buffer specifically for writing string data
-char* RequestStringFromPool();
+char* RequestStringFromPool() {
+    const char* s = _stringPool+_availableString;
+    _availableString += STRING_POOL_EACH_SIZE;
+    return (char*)s;
+}
